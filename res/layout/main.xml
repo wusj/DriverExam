@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<Button  
+	android:id="@+id/btn_chapter"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/chapter_exercise"
+    />
+<Button
+	android:id="@+id/btn_random"  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/random_exercise"
+    />
+<Button  
+	android:id="@+id/btn_intensify"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/intensify_exercise"
+    />
+<Button  
+	android:id="@+id/btn_exam"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/practice_exam"
+    />
+</LinearLayout>

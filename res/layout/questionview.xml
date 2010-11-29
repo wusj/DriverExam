@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width = "match_parent"
+  android:layout_height = "match_parent"
+  >
+  <LinearLayout
+  	android:id = "@+id/top_frame"
+  	android:orientation = "vertical"
+  	android:layout_width = "match_parent"
+  	android:layout_height = "wrap_content"
+  >
+	  <RelativeLayout
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="wrap_content"
+	  >
+	  	<TextView
+	  		android:id = "@+id/tv_total_question"
+	    	android:layout_width = "wrap_content"
+	    	android:layout_height = "wrap_content"
+	    	android:layout_alignParentLeft = "true"
+	  	/> 
+	  	<TextView
+	  		android:id = "@+id/tv_current_question"
+	    	android:layout_width = "wrap_content"
+	    	android:layout_height = "wrap_content"
+	    	android:layout_alignParentRight = "true"
+	  	/> 
+	  </RelativeLayout>
+	  <TextView
+	    android:layout_marginTop = "2dip"
+	  	android:layout_width = "match_parent"
+	  	android:layout_height = "1px"
+	  	android:background="@color/gray"
+	  />
+  </LinearLayout>
+  <ScrollView
+    android:layout_below = "@id/top_frame"
+    android:layout_above = "@+id/bottom_frame"
+  	android:layout_width = "match_parent"
+  	android:layout_height = "wrap_content"
+  >
+	  <LinearLayout
+	  	android:orientation = "vertical"
+	  	android:layout_width = "match_parent"
+	  	android:layout_height = "wrap_content"
+	  >
+	  	<TextView 
+	  	  android:id = "@+id/question"
+	  	  android:layout_width = "match_parent"
+	  	  android:layout_height = "wrap_content"
+	  	  android:bufferType="spannable"
+	  	  android:paddingBottom = "4dip"
+	  	  android:paddingTop = "4dip"
+	  	  android:textSize = "18sp"
+	    />
+	    <ImageView
+	      android:id = "@+id/imgv_picture"
+	      android:layout_width = "match_parent"
+	      android:layout_height = "wrap_content"
+	      android:layout_gravity = "center"
+	    />
+	  </LinearLayout>
+  </ScrollView>
+  <LinearLayout
+    android:id = "@id/bottom_frame"
+  	android:orientation = "vertical"
+  	android:layout_width = "match_parent"
+  	android:layout_height = "wrap_content"
+  	android:layout_alignParentBottom = "true"
+  >
+	  <RelativeLayout
+	  	android:orientation ="horizontal"
+	  	android:layout_width = "match_parent"
+	  	android:layout_height = "wrap_content"	
+	  	android:gravity="center_vertical"  	
+	  >
+		<TextView
+			android:id="@+id/tv_your_answer_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/your_answer"
+			android:layout_alignParentLeft="true"
+			android:layout_centerInParent="true"
+			android:textSize="18sp"
+		/>
+		<TextView
+			android:id="@+id/tv_your_answer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/tv_your_answer_label"
+			android:layout_centerInParent="true"
+			android:textSize="18sp"
+			android:textColor="@color/red"
+		/>
+	  	<RadioGroup
+	  		android:id="@+id/radiogroup_choice"
+	  		android:layout_width = "wrap_content"
+	  		android:layout_height = "wrap_content"
+	  		android:layout_alignParentRight="true"
+	  		android:orientation = "horizontal"
+	  		android:gravity="center"
+	  	>
+		  	<RadioButton
+		  	  android:id="@+id/radio_A"
+		  	  android:layout_width="wrap_content"
+		  	  android:layout_height="wrap_content"
+		  	  android:singleLine="true"
+		  	  android:paddingRight="5dip"
+		  	  android:text="A"
+		  	/>
+		  	<RadioButton
+		  	  android:id="@+id/radio_B"
+		  	  android:layout_width="wrap_content"
+		  	  android:layout_height="wrap_content"
+		  	  android:paddingRight="5dip"
+		  	  android:text="B"
+		  	/>	 
+		  	<RadioButton
+		  	  android:id="@+id/radio_C"
+		  	  android:layout_width="wrap_content"
+		  	  android:layout_height="wrap_content"
+		  	  android:paddingRight="5dip"
+		  	  android:text="C"
+		  	/>
+		  	<RadioButton
+		  	  android:id="@+id/radio_D"
+		  	  android:layout_width="wrap_content"
+		  	  android:layout_height="wrap_content"
+		  	  android:text="D"
+		  	/>	 
+		 </RadioGroup>
+	  	<RadioGroup
+	  		android:id="@+id/radiogroup_trueorfalse"
+	  		android:layout_width = "wrap_content"
+	  		android:layout_height = "wrap_content"
+	  		android:layout_alignParentRight="true"
+	  		android:orientation = "horizontal"
+	  		android:gravity="center"
+	  	>
+		  	<RadioButton
+		  	  android:id="@+id/radio_right"
+		  	  android:layout_width="wrap_content"
+		  	  android:layout_height="wrap_content"
+		  	  android:paddingRight="5dip"
+		  	  android:text="@string/right"
+		  	/>
+		  	<RadioButton
+		  	  android:id="@+id/radio_wrong"
+		  	  android:layout_width="wrap_content"
+		  	  android:layout_height="wrap_content"
+		  	  android:text="@string/wrong"
+		  	/>	 
+		 </RadioGroup>	
+		 <TextView
+		 	android:id="@+id/tv_right_answer_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/right_answer"
+			android:layout_toLeftOf="@+id/tv_right_answer"
+			android:layout_centerInParent="true"
+			android:visibility="invisible"	
+			android:textSize="18sp"	 
+		 />  
+		<TextView
+			android:id="@id/tv_right_answer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerInParent="true"
+			android:textSize="18sp"
+			android:textColor="@color/green"
+		/>
+	  </RelativeLayout>
+	  <RelativeLayout
+	  	android:orientation ="horizontal"
+	  	android:layout_width = "match_parent"
+	  	android:layout_height = "wrap_content"
+	  >
+	  	<Button
+	  	  android:id = "@+id/btn_prev_question"
+	  	  android:layout_width="wrap_content"
+	  	  android:layout_height="wrap_content"
+	  	  android:text="@string/prev_question"
+	  	/>
+	  	<Button
+	  	  android:id = "@+id/btn_over"
+	  	  android:layout_width="wrap_content"
+	  	  android:layout_height="wrap_content"
+	  	  android:text="@string/finish_exercise"
+	  	  android:layout_centerInParent="true"
+	  	/>
+	  	<Button
+	  	  android:id = "@+id/btn_next_question"
+	  	  android:layout_width="wrap_content"
+	  	  android:layout_height="wrap_content"
+	  	  android:text="@string/next_question"
+	  	  android:layout_alignParentRight = "true"
+	  	/>
+	  </RelativeLayout>
+  </LinearLayout>  
+</RelativeLayout>

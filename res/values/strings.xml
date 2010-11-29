@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">驾考模拟试题</string>
+    <string name="chapter_exercise">章节练习</string>
+    <string name="random_exercise">随机练习</string>
+    <string name="intensify_exercise">强化练习</string>
+    <string name="finish_exercise">完成练习</string>
+    <string name="practice_exam">模拟考试</string>
+    <string name="return_view">返回</string>
+    
+    <string name="next_question">下一题</string>
+    <string name="prev_question">上一题</string>
+    
+    <string name="total_question">共  %d  题</string>
+    <string name="current_question">第  %d  题</string>
+    
+    <string name="error_no_data">错误，不能正确操作试题库</string>
+    
+    <string name="your_answer">您的答案： </string>
+    <string name="right_answer">正确答案：</string>
+    <string name="section_list_qeuestions">(%d题)</string>
+    <string name="all_of_questions">所有题目</string>
+    
+    <string name="select_order">练习顺序</string>
+    <string name="order_exercise">顺序练习</string>
+    <string name="right">对</string>
+    <string name="wrong">错</string>
+    <string name="ok">确定</string>
+    <string name="exit">退出</string>
+    
+    <string name="a">A</string>
+    <string name="b">B</string>
+    <string name="c">C</string>
+    <string name="d">D</string>
+    
+    <string name="finish_right_prompt">恭喜您！本次练习共%d题，您已全部答对。</string>
+    <string name="finish_wrong_prompt">本次练习共%d题，您答对%d题，答错%d题。\n错题已存入强化练习！</string>
+    <string name="unfinish_wrong_prompt">本次练习共%d题，您已答%d题，答对%d题，答错%d题。\n错题已存入强化练习！</string>
+    <string name="view_wrong">错题回顾</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="exam_order">
+		<item>@string/order_exercise</item>
+		<item>@string/random_exercise</item>
+	</array>
+	
+	<array name="choice">
+		<item>@string/a</item>
+		<item>@string/b</item>
+		<item>@string/c</item>
+		<item>@string/d</item>
+	</array>
+</resources>
