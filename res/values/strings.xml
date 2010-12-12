@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">驾考模拟试题</string>
+    <string name="app_name">驾考无忧</string>
     <string name="chapter_exercise">章节练习</string>
     <string name="random_exercise">随机练习</string>
     <string name="intensify_exercise">强化练习</string>
     <string name="finish_exercise">完成练习</string>
     <string name="practice_exam">模拟考试</string>
+    <string name="continue_exercise">继续练习</string>
+    <string name="useage">关于系统</string>
     <string name="return_view">返回</string>
-    
+    <string name="question_version">2010年最新题库</string>
     <string name="next_question">下一题</string>
     <string name="prev_question">上一题</string>
     
@@ -27,6 +29,8 @@
     <string name="wrong">错</string>
     <string name="ok">确定</string>
     <string name="exit">退出</string>
+    <string name="cancel">取消</string>
+    <string name="jiaojuan">交卷</string>
     
     <string name="a">A</string>
     <string name="b">B</string>
@@ -36,5 +40,32 @@
     <string name="finish_right_prompt">恭喜您！本次练习共%d题，您已全部答对。</string>
     <string name="finish_wrong_prompt">本次练习共%d题，您答对%d题，答错%d题。\n错题已存入强化练习！</string>
     <string name="unfinish_wrong_prompt">本次练习共%d题，您已答%d题，答对%d题，答错%d题。\n错题已存入强化练习！</string>
+    <string name="unfinish_right_prompt">本次练习共%d题，您已答%d题，全部正确。</string>
     <string name="view_wrong">错题回顾</string>
+    <string name="no_wrong">没有错题，无法进行强化练习</string>
+    
+    <string name="exit_ack">您确定要退出本次练习吗？</string>
+    <string name="jiaojuan_ack">您确定要交卷吗？</string>
+    
+    <string name="your_score">您的得分是：</string>
+    
+    <string name="app_title">%s v%s 测试版</string>
+    <string name="about_text">Android平台适用\n\n©沃林克软件工作室\n版权所有\n</string>
+    <string name="about_note">* 本软件使用完全免费，使用过程中产生的网络流量费用由网络运营商收取。</string>
+    <string name="about_text1">\
+<html><body>欢迎使用 驾考无忧 驾驶员法培考试系统！\n\n
+    本套科目一考试题库是按照修订后的《机动车驾驶证申领和使用规定》（公安部令第91号）要求编写的，用于各地公安机关交通管理部门组织机动车驾驶许可考试。\n\n
+    本系统专门为广大机动车学习驾驶员量身订做的驾驶员模拟考试系统。系统内题库已经更新为最新题库，请放心使用。该考试系统具有很强的针对性、专业性、实用性，严格依据考试大纲编写，紧扣考试大纲，知识覆盖全面，并设有全真的考试环境，帮助你“最简单、最直接、最省时、最省力地考试通关！\n\n 
+    系统特点：\n
+★最新题库，是您考前的最佳助手。\n
+★错题“复现”功能专攻错题，针对薄弱点学习，复习更省时。 \n
+★模拟考试，随时按考试标准组卷测试，做到心中有数，复习更有针对性。\n
+★随时随地，方便，简单。
+    功能介绍：\n\n
+【章节练习】：根据学习资料的章节，学员可针对每一章节进行单独练习，也可以直接跳到其他章节进行练习。如果学员做错了题目，完成练习后可以进行错题回顾。\n 
+【强化练习】：针对在“常规练习”、“模拟考试”中做错的题目，系统将自动收集到本练习中，学员可以根据自己的学习情况进行反复练习，重点突破。\n 
+【模拟考试】：根据交通法规考试，严格按照正规考试比例出题。\n\n
+    本系统目前只适于用将要参加（C1、C2）法培考试的学员。\n\n
+    沃林克软件工作室</body></html>
+	</string>
 </resources>

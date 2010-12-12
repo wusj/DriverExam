@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res/org.wolink.m.android.driverexam"
   android:layout_width = "match_parent"
   android:layout_height = "match_parent"
   >
@@ -19,6 +20,12 @@
 	    	android:layout_width = "wrap_content"
 	    	android:layout_height = "wrap_content"
 	    	android:layout_alignParentLeft = "true"
+	  	/> 
+	  	<TextView
+	  		android:id = "@+id/txtv_time"
+	    	android:layout_width = "wrap_content"
+	    	android:layout_height = "wrap_content"
+	    	android:layout_centerInParent = "true"
 	  	/> 
 	  	<TextView
 	  		android:id = "@+id/tv_current_question"
@@ -74,6 +81,7 @@
 	  	android:layout_width = "match_parent"
 	  	android:layout_height = "wrap_content"	
 	  	android:gravity="center_vertical"  	
+	  	android:layout_marginBottom="8dip"
 	  >
 		<TextView
 			android:id="@+id/tv_your_answer_label"
@@ -198,5 +206,15 @@
 	  	  android:layout_alignParentRight = "true"
 	  	/>
 	  </RelativeLayout>
+    <com.casee.adsdk.CaseeAdView  
+    android:id="@+id/caseeAdView"
+    android:layout_width="fill_parent" 	
+    android:layout_height="48dip"   
+	android:layout_alignParentBottom="true" 
+    app:backgroundColor="#000000"
+    app:textColor="#FFFFFF"
+    app:refreshInterval="30000"
+    app:vertical="false"
+    /> 
   </LinearLayout>  
 </RelativeLayout>

@@ -1,31 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res/org.wolink.m.android.driverexam"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="30dip"
+    >
+<TextView
+    android:id="@+id/txtv_main_title"
+	android:text="@string/app_name"
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content"
+	android:layout_gravity="center"
+	android:textSize="24.5sp" />
+<TextView
+    android:id="@+id/txtv_question_version"
+	android:text="@string/question_version"
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content"
+	android:layout_gravity="center"
+	android:layout_marginBottom="15dip"
+	/>
 <Button  
 	android:id="@+id/btn_chapter"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/chapter_exercise"
-    />
-<Button
-	android:id="@+id/btn_random"  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/random_exercise"
+    android:layout_marginTop = "4dip" 
+    android:layout_marginBottom = "4dip" 
+	android:textSize="20sp"
     />
 <Button  
 	android:id="@+id/btn_intensify"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/intensify_exercise"
+    android:layout_marginTop = "4dip" 
+    android:layout_marginBottom = "4dip" 
+	android:textSize="20sp"
     />
 <Button  
 	android:id="@+id/btn_exam"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/practice_exam"
+    android:layout_marginTop = "4dip" 
+    android:layout_marginBottom = "4dip" 
+ 	android:textSize="20sp"
+    />
+<Button
+	android:id="@+id/btn_help"  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/useage"
+    android:layout_marginTop = "4dip" 
+    android:layout_marginBottom = "4dip" 
+	android:textSize="20sp"
     />
 </LinearLayout>
+  <com.casee.adsdk.CaseeAdView  
+    android:id="@+id/caseeAdView"
+    android:layout_width="fill_parent" 	
+    android:layout_height="48dip"   
+	android:layout_alignParentBottom="true" 
+    app:backgroundColor="#000000"
+    app:textColor="#FFFFFF"
+    app:refreshInterval="30000"
+    app:vertical="false"
+    /> 
+</RelativeLayout>
