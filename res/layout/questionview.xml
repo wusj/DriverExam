@@ -26,6 +26,7 @@
 	    	android:layout_width = "wrap_content"
 	    	android:layout_height = "wrap_content"
 	    	android:layout_centerInParent = "true"
+	    	android:text="00:00"
 	  	/> 
 	  	<TextView
 	  		android:id = "@+id/tv_current_question"
@@ -178,6 +179,7 @@
 			android:layout_centerInParent="true"
 			android:textSize="18sp"
 			android:textColor="@color/green"
+			android:layout_marginRight="5dip"
 		/>
 	  </RelativeLayout>
 	  <RelativeLayout
@@ -192,13 +194,6 @@
 	  	  android:text="@string/prev_question"
 	  	/>
 	  	<Button
-	  	  android:id = "@+id/btn_over"
-	  	  android:layout_width="wrap_content"
-	  	  android:layout_height="wrap_content"
-	  	  android:text="@string/finish_exercise"
-	  	  android:layout_centerInParent="true"
-	  	/>
-	  	<Button
 	  	  android:id = "@+id/btn_next_question"
 	  	  android:layout_width="wrap_content"
 	  	  android:layout_height="wrap_content"
@@ -206,15 +201,29 @@
 	  	  android:layout_alignParentRight = "true"
 	  	/>
 	  </RelativeLayout>
+	<FrameLayout
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	>
     <com.casee.adsdk.CaseeAdView  
     android:id="@+id/caseeAdView"
     android:layout_width="fill_parent" 	
     android:layout_height="48dip"   
-	android:layout_alignParentBottom="true" 
+	android:layout_alignParentBottom="true"
     app:backgroundColor="#000000"
     app:textColor="#FFFFFF"
-    app:refreshInterval="30000"
+    app:refreshInterval="20000"
     app:vertical="false"
     /> 
+	<TextView
+	android:id="@+id/txtv_ads_area"
+	android:layout_width="fill_parent"
+	android:layout_height="48dip"
+	android:text="@string/ads_area_text"
+	android:textColor="@color/gray"
+	android:textSize="20dp"
+	android:gravity="center"
+	/>
+	</FrameLayout>
   </LinearLayout>  
 </RelativeLayout>

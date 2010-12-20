@@ -30,7 +30,7 @@
                   >
         </activity>
         
-        <meta-data android:value="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" android:name="com.casee.adsdk.siteId" />
+        <meta-data android:value="BA7A27280B27C93440AB9356A2032371" android:name="com.casee.adsdk.siteId" />
         <meta-data android:value="false" android:name="com.casee.adsdk.isTesting" />
         
     </application>

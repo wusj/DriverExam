@@ -7,12 +7,15 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -24,7 +27,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.casee.adsdk.CaseeAdView;
 
-public class QuestionView extends Activity implements OnClickListener, OnCheckedChangeListener{
+public class QuestionView extends Activity implements OnClickListener, OnCheckedChangeListener, CaseeAdView.AdListener{
 	private static final String TAG = "DriverExam";
 	
 	private static final String STRONG_FILE = "wrong_question";
@@ -35,6 +38,14 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	public static final String KEY_MODE = "org.wolink.m.android.questionview.mode";
 	public static final String KEY_TITLE = "org.wolink.m.android.driverexam.title";
 	
+	public static final String SAVE_KEY_QUESTION_LIST = "question_list";
+	public static final String SAVE_KEY_ANSWER_LIST = "answer_list";
+	public static final String SAVE_KEY_WRONG_LIST = "wrong_list";
+	public static final String SAVE_KEY_CUR_ITEM = "current_item";
+	public static final String SAVE_KEY_CUR_WRONG = "current_wrong";
+	public static final String SAVE_KEY_START_TIME = "start_time";
+	public static final String SAVE_KEY_VIEW_MODE = "view_mode";
+	
 	public static final int ORDER_SEQUENTIAL = 0;
 	public static final int ORDER_RANDOM = 1;
 	
@@ -42,6 +53,14 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	public static final int MODE_VIEW_WRONG = 1;
 	public static final int MODE_TEST_EXAM = 2;
 	public static final int MODE_STRONG = 3;
+	
+	public static final int MENU_ID_FINISH = Menu.FIRST + 1;
+	public static final int MENU_ID_JIAOJUAN = Menu.FIRST + 2;
+	
+	public static final int DIALOG_ID_ACK_JIAOJUAN = 0;
+	public static final int DIALOG_ID_START_EXAM = 1;
+	public static final int DIALOG_ID_ACK_FINISH = 2;
+	public static final int DIALOG_ID_FINISH_EXERCISE = 3;
 	
 	QuestionItem[] question_items; 
 	int[] question_list;
@@ -51,6 +70,7 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	int current_question;
 	int current_wrong;
 	int mode;
+	boolean mHaveAd = false;
 	TextView tv_question_title;
 	TextView tv_total_question;
 	TextView tv_current_question;
@@ -58,13 +78,13 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	TextView tv_your_answer;
 	TextView tv_right_answer;
 	TextView txtv_time;
+	TextView txtv_ads_area;
 	RadioGroup rg_choice;
 	RadioGroup rg_trueorfalse;
 	CaseeAdView cav;
 	
 	Button btn_next_question;
 	Button btn_prev_question;
-	Button btn_over;
 	
 	ImageView imgv_picture;
 	
@@ -87,8 +107,18 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		       else {
 		    	   txtv_time.setText(String.format("%02d:%02d", minutes, seconds));
 		       }
-		     
-		       mHandler.postDelayed(mUpdateTimeTask, 500);
+		       
+		       if ((QuestionView.this.mode == QuestionView.MODE_TEST_EXAM) && (minutes >= 45)) {
+		    	   try {
+		    		   QuestionView.this.dismissDialog(DIALOG_ID_ACK_JIAOJUAN);
+		    	   }
+		    	   catch (Throwable t) {
+		    		   
+		    	   }
+		    	   QuestionView.this.disScoreDialog();
+		       } else {
+		    	   mHandler.postDelayed(mUpdateTimeTask, 500);
+		       }
 		   }
 	};
 		
@@ -96,7 +126,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);     
-        Log.d(TAG, "onCreate");
         
         setContentView(R.layout.questionview);
          
@@ -107,19 +136,19 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
         tv_your_answer = (TextView)findViewById(R.id.tv_your_answer);
         tv_right_answer = (TextView)findViewById(R.id.tv_right_answer);
         txtv_time = (TextView)findViewById(R.id.txtv_time);
+        txtv_ads_area = (TextView)findViewById(R.id.txtv_ads_area);
         
         rg_choice = (RadioGroup)findViewById(R.id.radiogroup_choice);
         rg_trueorfalse = (RadioGroup)findViewById(R.id.radiogroup_trueorfalse);
         btn_next_question = (Button)findViewById(R.id.btn_next_question);
         btn_prev_question = (Button)findViewById(R.id.btn_prev_question);
-        btn_over = (Button)findViewById(R.id.btn_over);
         imgv_picture = (ImageView)findViewById(R.id.imgv_picture);
         
         cav = (CaseeAdView) this.findViewById(R.id.caseeAdView);
+        cav.setListener(this);
         
         btn_next_question.setOnClickListener(this);
         btn_prev_question.setOnClickListener(this);
-        btn_over.setOnClickListener(this);
         
         rg_choice.setOnCheckedChangeListener(this);
         rg_trueorfalse.setOnCheckedChangeListener(this);
@@ -133,47 +162,63 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
         }
         initImageSrcList();
 		
-        int offset = getIntent().getIntExtra(KEY_QUESTION_OFFSET, 0);
-        int count = getIntent().getIntExtra(KEY_QUESTION_COUNT, question_items.length - offset);
-        int random = getIntent().getIntExtra(KEY_QUESTION_ORDER, ORDER_SEQUENTIAL);
-        mode = getIntent().getIntExtra(KEY_MODE, MODE_NORMAL);
         this.setTitle(getIntent().getStringExtra(KEY_TITLE));
-        
-        if (mode == MODE_TEST_EXAM) {
-        	count = 100;
+        if (savedInstanceState == null) {
+	        int offset = getIntent().getIntExtra(KEY_QUESTION_OFFSET, 0);
+	        int count = getIntent().getIntExtra(KEY_QUESTION_COUNT, question_items.length - offset);
+	        int random = getIntent().getIntExtra(KEY_QUESTION_ORDER, ORDER_SEQUENTIAL);
+	        mode = getIntent().getIntExtra(KEY_MODE, MODE_NORMAL);
+	        
+	        if (mode == MODE_TEST_EXAM) {
+	        	count = 100;
+	        }
+	        question_list = new int[count];
+	        answer_list = new int[count];
+	        for(int i = 0; i < count; i++) {
+	        	question_list[i] = i + offset;
+	        	answer_list[i] = -1;
+	        }
+	        current_question = 0;
+	        
+	        if (mode == MODE_TEST_EXAM) {
+	        	// random 60 choices and 40 true or false 
+	        	genTestQuestionList();
+	        }
+	        else if (mode == MODE_STRONG) {
+	        	if (genStrongQuestionList() == false) {
+	        		Toast
+						.makeText(this, R.string.no_wrong, Toast.LENGTH_SHORT)
+						.show();
+		    		finish();
+	    			return;
+	        	}
+	       }
+	        else if (random == ORDER_RANDOM) {
+	        	genRandomQuestionsList();
+	        }
+	        
+	        updateQuestionView();
+	        
+	        if (mode == MODE_TEST_EXAM) {
+	        	showDialog(DIALOG_ID_START_EXAM);
+	        } else {
+	        	startTimer();
+	        }
         }
-        question_list = new int[count];
-        answer_list = new int[count];
-        for(int i = 0; i < count; i++) {
-        	question_list[i] = i + offset;
-        	answer_list[i] = -1;
-        }
-        current_question = 0;
-        
-        if (mode == MODE_TEST_EXAM) {
-        	// random 60 choices and 40 true or false 
-        	genTestQuestionList();
-        	btn_over.setText(R.string.jiaojuan);
-        }
-        else if (mode == MODE_STRONG) {
-        	if (genStrongQuestionList() == false) {
-        		Toast
-					.makeText(this, R.string.no_wrong, Toast.LENGTH_SHORT)
-					.show();
-	    		finish();
-    			return;
+        else {
+        	mode = savedInstanceState.getInt(SAVE_KEY_VIEW_MODE);
+        	question_list = savedInstanceState.getIntArray(SAVE_KEY_QUESTION_LIST);
+        	answer_list = savedInstanceState.getIntArray(SAVE_KEY_ANSWER_LIST);
+        	wrong_list = savedInstanceState.getIntArray(SAVE_KEY_WRONG_LIST);
+        	current_question = savedInstanceState.getInt(SAVE_KEY_CUR_ITEM);
+        	current_wrong = savedInstanceState.getInt(SAVE_KEY_CUR_WRONG);
+        	mStartTime = savedInstanceState.getLong(SAVE_KEY_START_TIME);
+        	if (mStartTime != 0L) {
+        		mHandler.postDelayed(mUpdateTimeTask, 0);
         	}
-       }
-        else if (random == ORDER_RANDOM) {
-        	genRandomQuestionsList();
+        	updateQuestionView();
         }
-        
-        if (mStartTime == 0L) {
-            mStartTime = System.currentTimeMillis();
-            mHandler.removeCallbacks(mUpdateTimeTask);
-            mHandler.postDelayed(mUpdateTimeTask, 100);
-        }    
-        updateQuestionView();
+        log("onCreate");
     }
 
 	public void onPause() {
@@ -209,6 +254,77 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		super.onDestroy();
 	}
 	
+	public void onSaveInstanceState (Bundle outState) {
+		outState.putIntArray(SAVE_KEY_QUESTION_LIST, question_list);
+		outState.putIntArray(SAVE_KEY_ANSWER_LIST, answer_list);
+		outState.putIntArray(SAVE_KEY_WRONG_LIST, wrong_list);
+		outState.putInt(SAVE_KEY_CUR_ITEM, current_question);
+		outState.putInt(SAVE_KEY_CUR_WRONG, current_wrong);
+		outState.putLong(SAVE_KEY_START_TIME, mStartTime);
+		outState.putInt(SAVE_KEY_VIEW_MODE, mode);
+	}
+	
+	public void onFailedToReceiveAd(CaseeAdView cav) {
+		// TODO Auto-generated method stub
+		log("onFailedToReceiveAd");
+	}
+
+	public void onFailedToReceiveRefreshAd(CaseeAdView cav) {
+		// TODO Auto-generated method stub
+		log("onFailedToReceiveRefreshAd");
+	}
+
+	private Handler mUpdateAdsHandler = new Handler();
+	private Runnable mUpdateAdsArea = new Runnable() {
+		   public void run() {
+				txtv_ads_area.setVisibility(View.INVISIBLE);			   	
+		   }
+	};
+	public void onReceiveAd(CaseeAdView cav) {
+		// TODO Auto-generated method stub	
+		log("onReceiveAd");
+		mHaveAd = true;
+		mUpdateAdsHandler.post(mUpdateAdsArea);
+	}
+
+	public void onReceiveRefreshAd(CaseeAdView cav) {
+		// TODO Auto-generated method stub
+		log("onReceiveRefreshAd");	
+	}
+	
+	public boolean onPrepareOptionsMenu (Menu menu) {
+		menu.clear();
+		if (mode == MODE_TEST_EXAM) {
+			menu.add(Menu.NONE, MENU_ID_JIAOJUAN, Menu.NONE, R.string.jiaojuan);
+		}
+		else if (mode == MODE_VIEW_WRONG) {
+			// Nothing add
+		}
+		else {
+			menu.add(Menu.NONE, MENU_ID_FINISH, Menu.NONE, R.string.finish_exercise);
+		}
+		
+		return (super.onPrepareOptionsMenu(menu));
+	}
+	
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		return (super.onCreateOptionsMenu(menu));
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_ID_FINISH:
+			finishExercise();
+			return true;
+		case MENU_ID_JIAOJUAN:
+			showDialog(DIALOG_ID_ACK_JIAOJUAN);
+			return true;
+		}
+				
+		return super.onOptionsItemSelected(item);
+	}
+	
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_next_question:
@@ -241,106 +357,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 				}
 			}
 			break;
-		case R.id.btn_over:
-			int have_answer = 0;
-			int right_answer = 0;
-			for(int i = 0; i < answer_list.length; i++) {
-				if (answer_list[i] != -1) 
-					have_answer++;
-				
-				if (answer_list[i] == question_items[question_list[i]].answer)
-					right_answer++;
-			}
-			
-			if (mode == MODE_TEST_EXAM) {
-				AlertDialog.Builder builder= new AlertDialog.Builder(this);
-				builder
-					.setTitle(R.string.jiaojuan)
-					.setMessage(R.string.jiaojuan_ack)
-					.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dlg, int sumthin) {
-								QuestionView.this.disScoreDialog();
-							}
-						})
-					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dlg, int sumthin) {
-							}
-						})
-					.setCancelable(true)
-					.show();					
-				break;
-			}
-			
-			saveWrongQuestions();
-			mHandler.removeCallbacks(mUpdateTimeTask);
-
-			if (have_answer != answer_list.length) {
-				if (right_answer == have_answer) {
-					AlertDialog.Builder builder= new AlertDialog.Builder(this);
-					builder
-						.setTitle(R.string.finish_exercise)
-						.setMessage(String.format(getString(R.string.unfinish_right_prompt), answer_list.length, have_answer))
-						.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dlg, int sumthin) {
-								QuestionView.this.finish();
-								}
-							})
-						.setCancelable(false)
-						.show();					
-				}
-				else {
-					AlertDialog.Builder builder= new AlertDialog.Builder(this);
-					builder
-						.setTitle(R.string.finish_exercise)
-						.setMessage(String.format(getString(R.string.unfinish_wrong_prompt), answer_list.length, have_answer, 
-								right_answer, have_answer - right_answer))
-						.setPositiveButton(R.string.view_wrong, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dlg, int sumthin) {
-									enterViewWrongMode();
-								}
-							})
-						.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dlg, int sumthin) {
-									QuestionView.this.finish();
-								}
-							})
-						.setCancelable(false)
-						.show();
-				}
-			}
-			else if (right_answer == answer_list.length) {
-				AlertDialog.Builder builder= new AlertDialog.Builder(this);
-				builder
-					.setTitle(R.string.finish_exercise)
-					.setMessage(String.format(getString(R.string.finish_right_prompt), right_answer))
-					.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dlg, int sumthin) {
-								QuestionView.this.finish();
-							}
-						})
-					.setCancelable(false)
-					.show();
-			}
-			else {
-				AlertDialog.Builder builder= new AlertDialog.Builder(this);
-				builder
-					.setTitle(R.string.finish_exercise)
-					.setMessage(String.format(getString(R.string.finish_wrong_prompt), answer_list.length, right_answer, 
-							answer_list.length - right_answer))
-					.setPositiveButton(R.string.view_wrong, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dlg, int sumthin) {
-								enterViewWrongMode();
-							}
-						})
-					.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dlg, int sumthin) {
-								QuestionView.this.finish();
-							}
-						})
-					.setCancelable(false)
-					.show();				
-			}
-			break;
 		}
 	}	
 
@@ -368,33 +384,98 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 			btn_next_question.setEnabled(true);
 		} 
 		else if ((current_question == question_list.length - 1) && (mode != MODE_TEST_EXAM)) {
-			onClick(btn_over);
+			finishExercise();
 		}
 	}
 	
-	public void onBackPressed() {
-		if (mode == MODE_NORMAL) {
-			AlertDialog.Builder builder= new AlertDialog.Builder(this);
-			builder
-				.setTitle(R.string.exit)
-				.setMessage(R.string.exit_ack)
-				.setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dlg, int sumthin) {
-							QuestionView.this.finish();
-						}
-					})
-				.setNegativeButton(R.string.continue_exercise, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dlg, int sumthin) {
-						}
-					})
-				.setCancelable(false)
-				.show();
+	public void onBackPressed() {		
+		if (mode == MODE_NORMAL || mode == MODE_STRONG) {
+			showDialog(DIALOG_ID_ACK_FINISH);
+		}
+		else if (mode == MODE_TEST_EXAM) {
+			showDialog(DIALOG_ID_ACK_JIAOJUAN);
 		}
 		else {
 			QuestionView.this.finish();
 		}
 	}
-		
+	
+	public Dialog onCreateDialog (int id) {
+	    Dialog dialog;
+	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+	    switch(id) {
+	    case DIALOG_ID_ACK_JIAOJUAN:
+			builder
+				.setTitle(R.string.jiaojuan)
+				.setMessage(R.string.jiaojuan_ack)
+				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dlg, int sumthin) {
+						QuestionView.this.disScoreDialog();
+						}
+					})
+				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dlg, int sumthin) {
+						dlg.dismiss();
+					}
+					})
+				.setCancelable(true);
+			dialog = builder.create();
+	    	break;
+	    case DIALOG_ID_START_EXAM:
+			builder
+			.setTitle(R.string.practice_exam)
+			.setMessage(R.string.exam_prompt)
+			.setPositiveButton(R.string.start_answer, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dlg, int sumthin) {
+						QuestionView.this.startTimer();
+						dlg.dismiss();
+					}
+				});
+			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					QuestionView.this.finish();
+				}				
+			});
+			dialog = builder.create();	
+	    	break;
+	    case DIALOG_ID_ACK_FINISH:
+			builder
+			.setTitle(R.string.finish_exercise)
+			.setMessage(R.string.exit_ack)
+			.setPositiveButton(R.string.finish_exercise, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dlg, int sumthin) {
+						QuestionView.this.finishExercise();
+					}
+				})
+			.setNegativeButton(R.string.continue_exercise, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dlg, int sumthin) {
+					dlg.dismiss();
+					}
+				});
+			dialog = builder.create();	
+	    	break;
+	    case DIALOG_ID_FINISH_EXERCISE:
+			builder
+				.setTitle(R.string.finish_exercise);
+			dialog = builder.create();	
+	    	break;
+	    default:
+	        dialog = null;
+	    }
+	    
+	    return dialog;		
+	}
+	
+	public void onPrepareDialog (int id, Dialog dialog, Bundle args) {
+		switch (id) {
+	    case DIALOG_ID_FINISH_EXERCISE:
+	    	//
+	    	break;
+			
+		}
+	}
+	
 	private void updateQuestionView() {
 		QuestionItem question_item = question_items[question_list[current_question]];
 		updateView = true;
@@ -410,7 +491,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		if (mode == MODE_VIEW_WRONG) {
 			rg_choice.setVisibility(View.INVISIBLE);
 			rg_trueorfalse.setVisibility(View.INVISIBLE);	
-			btn_over.setVisibility(View.INVISIBLE);
 			tv_right_answer_label.setVisibility(View.VISIBLE);
 			if (question_item.flag == QuestionItem.TRUE_OR_FALSE) {
 				tv_your_answer.setText(trueorfalse[answer_list[current_question]]);
@@ -495,7 +575,11 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	
 	private void disScoreDialog() {
 		int right_answer = 0;
+		int have_answer = 0;
 		for(int i = 0; i < answer_list.length; i++) {
+			if (answer_list[i] != -1) 
+				have_answer++;
+			
 			if (answer_list[i] == question_items[question_list[i]].answer)
 				right_answer++;
 		}
@@ -507,23 +591,118 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		View view = li.inflate(R.layout.score_layout, null);
 		TextView txtv_score = (TextView)view.findViewById(R.id.txtv_score);
 		txtv_score.setText("" + right_answer);
+		if (right_answer >= 90) {
+			txtv_score.setTextColor(0xFF00FF00);
+		}
 		
 		//get a builder and set the view
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.jiaojuan);
 		builder.setView(view);
+		if (have_answer > 0) {
 		builder.setPositiveButton(R.string.view_wrong, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dlg, int sumthin) {
 					enterViewWrongMode();
 				}
 			});
-		builder.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+		}
+		builder.setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dlg, int sumthin) {
 					QuestionView.this.finish();
 				}
 			});
 		builder.setCancelable(false);
 		builder.show();
+	}
+	
+	private void startTimer() {
+        if (mStartTime == 0L) {
+            mStartTime = System.currentTimeMillis();
+            mHandler.removeCallbacks(mUpdateTimeTask);
+            mHandler.postDelayed(mUpdateTimeTask, 100);
+        }   		
+	}
+	
+	private void finishExercise() {
+		int have_answer = 0;
+		int right_answer = 0;
+		for(int i = 0; i < answer_list.length; i++) {
+			if (answer_list[i] != -1) 
+				have_answer++;
+			
+			if (answer_list[i] == question_items[question_list[i]].answer)
+				right_answer++;
+		}
+		
+		saveWrongQuestions();
+		mHandler.removeCallbacks(mUpdateTimeTask);
+
+		if (have_answer != answer_list.length) {
+			if (right_answer == have_answer) {
+				AlertDialog.Builder builder= new AlertDialog.Builder(this);
+				builder
+					.setTitle(R.string.finish_exercise)
+					.setMessage(String.format(getString(R.string.unfinish_right_prompt), answer_list.length, have_answer))
+					.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dlg, int sumthin) {
+							QuestionView.this.finish();
+							}
+						})
+					.setCancelable(false)
+					.show();					
+			}
+			else {
+				AlertDialog.Builder builder= new AlertDialog.Builder(this);
+				builder
+					.setTitle(R.string.finish_exercise)
+					.setMessage(String.format(getString(R.string.unfinish_wrong_prompt), answer_list.length, have_answer, 
+							right_answer, have_answer - right_answer))
+					.setPositiveButton(R.string.view_wrong, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dlg, int sumthin) {
+								enterViewWrongMode();
+							}
+						})
+					.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dlg, int sumthin) {
+								QuestionView.this.finish();
+							}
+						})
+					.setCancelable(false)
+					.show();
+			}
+		}
+		else if (right_answer == answer_list.length) {
+			AlertDialog.Builder builder= new AlertDialog.Builder(this);
+			builder
+				.setTitle(R.string.finish_exercise)
+				.setMessage(String.format(getString(R.string.finish_right_prompt), right_answer))
+				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dlg, int sumthin) {
+							QuestionView.this.finish();
+						}
+					})
+				.setCancelable(false)
+				.show();
+		}
+		else {
+			AlertDialog.Builder builder= new AlertDialog.Builder(this);
+			builder
+				.setTitle(R.string.finish_exercise)
+				.setMessage(String.format(getString(R.string.finish_wrong_prompt), answer_list.length, right_answer, 
+						answer_list.length - right_answer))
+				.setPositiveButton(R.string.view_wrong, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dlg, int sumthin) {
+							enterViewWrongMode();
+						}
+					})
+				.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dlg, int sumthin) {
+							QuestionView.this.finish();
+						}
+					})
+				.setCancelable(false)
+				.show();				
+		}		
 	}
 	
 	private void genRandomQuestionsList() {
@@ -861,6 +1040,10 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 			s = s + 256 + bl;
 		
 		return s;
+	}
+	
+	private void log(String log) {
+		Log.d(TAG, log);
 	}
 	
 	private boolean updateView;

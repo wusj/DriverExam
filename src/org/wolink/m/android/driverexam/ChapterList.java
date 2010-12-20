@@ -49,7 +49,7 @@ public class ChapterList extends ListActivity  implements OnClickListener, OnIte
 	}	
 
 	public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
-		cur_item = (SectionItem)v.getTag();
+		cur_item = ((SectionAdapter.ViewHolder)v.getTag()).item;
 		if (cur_item.count != 0) {
 			new AlertDialog.Builder(this)
 			.setTitle(R.string.select_order)
@@ -140,35 +140,51 @@ public class ChapterList extends ListActivity  implements OnClickListener, OnIte
 		return s;
 	}
 	
-	class SectionAdapter extends ArrayAdapter<SectionItem> {
+	private class SectionAdapter extends ArrayAdapter<SectionItem> {		
 		public SectionAdapter(Context context, SectionItem[] objects) {
 			super(context, R.layout.chapterrow, objects);
 		}
 		
 		public View getView(int position, View convertView,
 				ViewGroup parent) {
-			LayoutInflater inflater=getLayoutInflater();
-			View row=inflater.inflate(R.layout.chapterrow, parent, false);
-			TextView title = (TextView)row.findViewById(R.id.title);
-			SectionItem item = this.getItem(position);
-			if (item.level == 0) {
-				title.setText(item.title + " " + String.format(getString(R.string.section_list_qeuestions), item.count));
-				title.setTextSize(22);
-				//title.setTypeface(title.getTypeface(), Typeface.ITALIC);
-			}
-			else if (item.level == 1) {
-				title.setText("  " + item.title + " " + String.format(getString(R.string.section_list_qeuestions), item.count));
-				title.setTextSize(20);
-				title.setTypeface(title.getTypeface(), Typeface.ITALIC);
-			}
-			else {
-				title.setText("    " + item.title + " " + String.format(getString(R.string.section_list_qeuestions), item.count));
-				title.setTextSize(18);
+			ViewHolder holder;
+			
+			if (convertView == null) {
+				LayoutInflater inflater=getLayoutInflater();
+				convertView = inflater.inflate(R.layout.chapterrow, parent, false);
+				
+				holder = new ViewHolder();
+				holder.title = (TextView)convertView.findViewById(R.id.title);
+				
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
 			}
 			
-			row.setTag(item);
-			return(row);			
+			holder.item = this.getItem(position);
+			if (holder.item.level == 0) {
+				holder.title.setText(holder.item.title + " " + String.format(getString(R.string.section_list_qeuestions), holder.item.count));
+				holder.title.setTextSize(22);
+				holder.title.setTypeface(holder.title.getTypeface(), Typeface.NORMAL);
+			}
+			else if (holder.item.level == 1) {
+				holder.title.setText("  " + holder.item.title + " " + String.format(getString(R.string.section_list_qeuestions), holder.item.count));
+				holder.title.setTextSize(20);
+				holder.title.setTypeface(holder.title.getTypeface(), Typeface.ITALIC);
+			}
+			else {
+				holder.title.setText("    " + holder.item.title + " " + String.format(getString(R.string.section_list_qeuestions), holder.item.count));
+				holder.title.setTextSize(18);
+				holder.title.setTypeface(holder.title.getTypeface(), Typeface.NORMAL);
+			}
+			
+			return(convertView);			
 		}
+		
+        class ViewHolder {
+            TextView title;
+            SectionItem item;
+        }
 	}
 	
 	private class SectionItem {

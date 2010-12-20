@@ -4,7 +4,7 @@
     <string name="chapter_exercise">章节练习</string>
     <string name="random_exercise">随机练习</string>
     <string name="intensify_exercise">强化练习</string>
-    <string name="finish_exercise">完成练习</string>
+    <string name="finish_exercise">结束练习</string>
     <string name="practice_exam">模拟考试</string>
     <string name="continue_exercise">继续练习</string>
     <string name="useage">关于系统</string>
@@ -12,11 +12,13 @@
     <string name="question_version">2010年最新题库</string>
     <string name="next_question">下一题</string>
     <string name="prev_question">上一题</string>
-    
+    <string name="start_answer">开始答题</string>
+    <string name="exam_prompt">驾驶员科目一（法培）考试共100道题目，其中有60道选择题、40道判断题，时间45分钟，90分及格。\n\n现在深呼吸一下，开始答题</string>
     <string name="total_question">共  %d  题</string>
     <string name="current_question">第  %d  题</string>
     
     <string name="error_no_data">错误，不能正确操作试题库</string>
+    <string name="ads_area_text">恭祝您顺利通过考试</string>
     
     <string name="your_answer">您的答案： </string>
     <string name="right_answer">正确答案：</string>
@@ -44,12 +46,12 @@
     <string name="view_wrong">错题回顾</string>
     <string name="no_wrong">没有错题，无法进行强化练习</string>
     
-    <string name="exit_ack">您确定要退出本次练习吗？</string>
+    <string name="exit_ack">您确定要结束本次练习吗？</string>
     <string name="jiaojuan_ack">您确定要交卷吗？</string>
     
     <string name="your_score">您的得分是：</string>
     
-    <string name="app_title">%s v%s 测试版</string>
+    <string name="app_title">%s v%s</string>
     <string name="about_text">Android平台适用\n\n©沃林克软件工作室\n版权所有\n</string>
     <string name="about_note">* 本软件使用完全免费，使用过程中产生的网络流量费用由网络运营商收取。</string>
     <string name="about_text1">\
