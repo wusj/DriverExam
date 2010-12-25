@@ -11,9 +11,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -544,16 +548,22 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		
 		/* Update question image */
 		if (question_item.src != 0) { /* have a image */
-			BitmapDrawable drawable = null;
+			BitmapDrawable dr = null;
 			try {
+				Rect pad = new Rect();
+				BitmapFactory.Options opts = new BitmapFactory.Options();
 				AssetManager assets = getAssets(); 
-				drawable = new BitmapDrawable(getResources(), 
-					assets.open(question_item.src + ".gif"));
+				opts.inDensity = DisplayMetrics.DENSITY_DEFAULT;
+				opts.inTargetDensity = getResources().getDisplayMetrics().densityDpi;
+                InputStream is = assets.open(question_item.src + ".gif");
+                Bitmap bm = BitmapFactory.decodeStream(is, pad, opts);
+                dr = new BitmapDrawable(getResources(), bm);
+                is.close();
 			} 
 			catch (Throwable t) {
 				// Nothing
 			}
-			imgv_picture.setImageDrawable(drawable);
+			imgv_picture.setImageDrawable(dr);
 		} else {
 			imgv_picture.setImageDrawable(null);
 		}
