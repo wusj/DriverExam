@@ -82,7 +82,7 @@
 	  	android:layout_width = "match_parent"
 	  	android:layout_height = "wrap_content"	
 	  	android:gravity="center_vertical"  	
-	  	android:layout_marginBottom="8dip"
+	  	android:layout_marginBottom="0dip"
 	  >
 		<TextView
 			android:id="@+id/tv_your_answer_label"
@@ -182,7 +182,7 @@
 			android:layout_marginRight="5dip"
 		/>
 	  </RelativeLayout>
-	  <RelativeLayout
+	  <LinearLayout
 	  	android:orientation ="horizontal"
 	  	android:layout_width = "match_parent"
 	  	android:layout_height = "wrap_content"
@@ -193,14 +193,31 @@
 	  	  android:layout_height="wrap_content"
 	  	  android:text="@string/prev_question"
 	  	/>
+	  	<RelativeLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"				
+	  	>
+		<TextView 
+		    android:id="@+id/btn_adsinfo"
+			android:layout_width="match_parent"
+			android:layout_height="16px"	
+			android:gravity="center"
+			android:textSize="12px"
+			android:text="@string/ads_info"	
+			android:layout_weight="0"	
+			android:layout_alignParentBottom="true"
+			android:background="#10FFFFFF"
+			android:visibility="invisible"	
+		/>
+	  	</RelativeLayout>
 	  	<Button
 	  	  android:id = "@+id/btn_next_question"
 	  	  android:layout_width="wrap_content"
 	  	  android:layout_height="wrap_content"
 	  	  android:text="@string/next_question"
-	  	  android:layout_alignParentRight = "true"
 	  	/>
-	  </RelativeLayout>
+	  </LinearLayout>
 	<FrameLayout
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
@@ -210,6 +227,7 @@
     android:layout_width="fill_parent" 	
     android:layout_height="48dip"   
 	android:layout_alignParentBottom="true"
+	android:visibility="invisible"	
     app:backgroundColor="#000000"
     app:textColor="#FFFFFF"
     app:refreshInterval="20000"
@@ -223,6 +241,12 @@
 	android:textColor="@color/gray"
 	android:textSize="20dp"
 	android:gravity="center"
+	/>
+	<View
+	android:id="@+id/btn_closeAds"
+	android:layout_width="fill_parent"
+	android:layout_height="48dip"
+	android:visibility="invisible"	
 	/>
 	</FrameLayout>
   </LinearLayout>  

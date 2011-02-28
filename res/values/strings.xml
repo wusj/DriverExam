@@ -9,7 +9,7 @@
     <string name="continue_exercise">继续练习</string>
     <string name="useage">关于系统</string>
     <string name="return_view">返回</string>
-    <string name="question_version">2010年最新题库</string>
+    <string name="question_version">2010年7月题库</string>
     <string name="next_question">下一题</string>
     <string name="prev_question">上一题</string>
     <string name="start_answer">开始答题</string>
@@ -27,8 +27,8 @@
     
     <string name="select_order">练习顺序</string>
     <string name="order_exercise">顺序练习</string>
-    <string name="right">对</string>
-    <string name="wrong">错</string>
+    <string name="right">正确</string>
+    <string name="wrong">错误</string>
     <string name="ok">确定</string>
     <string name="exit">退出</string>
     <string name="cancel">取消</string>
@@ -54,20 +54,6 @@
     <string name="app_title">%s v%s</string>
     <string name="about_text">Android平台适用\n\n©沃林克软件工作室\n版权所有\n\n官网：<a href="http://sw.wolink.org/">http://sw.wolink.org</a>\n</string>
     <string name="about_note">* 本软件使用完全免费，使用过程中产生的网络流量费用由网络运营商收取。</string>
-    <string name="about_text1">\
-<html><body>欢迎使用 驾考无忧 驾驶员法培考试系统！\n\n
-    本套科目一考试题库是按照修订后的《机动车驾驶证申领和使用规定》（公安部令第91号）要求编写的，用于各地公安机关交通管理部门组织机动车驾驶许可考试。\n\n
-    本系统专门为广大机动车学习驾驶员量身订做的驾驶员模拟考试系统。系统内题库已经更新为最新题库，请放心使用。该考试系统具有很强的针对性、专业性、实用性，严格依据考试大纲编写，紧扣考试大纲，知识覆盖全面，并设有全真的考试环境，帮助你“最简单、最直接、最省时、最省力地考试通关！\n\n 
-    系统特点：\n
-★最新题库，是您考前的最佳助手。\n
-★错题“复现”功能专攻错题，针对薄弱点学习，复习更省时。 \n
-★模拟考试，随时按考试标准组卷测试，做到心中有数，复习更有针对性。\n
-★随时随地，方便，简单。
-    功能介绍：\n\n
-【章节练习】：根据学习资料的章节，学员可针对每一章节进行单独练习，也可以直接跳到其他章节进行练习。如果学员做错了题目，完成练习后可以进行错题回顾。\n 
-【强化练习】：针对在“常规练习”、“模拟考试”中做错的题目，系统将自动收集到本练习中，学员可以根据自己的学习情况进行反复练习，重点突破。\n 
-【模拟考试】：根据交通法规考试，严格按照正规考试比例出题。\n\n
-    本系统目前只适于用将要参加（C1、C2）法培考试的学员。\n\n
-    沃林克软件工作室</body></html>
-	</string>
+    
+    <string name="ads_info">如果您对广告感到不适，点击关闭</string>
 </resources>

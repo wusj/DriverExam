@@ -3,6 +3,7 @@ package org.wolink.m.android.driverexam;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Random;
 
 import android.app.Activity;
@@ -10,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +19,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,6 +94,9 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	Button btn_next_question;
 	Button btn_prev_question;
 	
+	View btn_closeAds;
+	View btn_adsinfo;
+	
 	ImageView imgv_picture;
 	
 	/* time process */
@@ -149,6 +155,11 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
         btn_prev_question = (Button)findViewById(R.id.btn_prev_question);
         imgv_picture = (ImageView)findViewById(R.id.imgv_picture);
         
+        btn_closeAds = findViewById(R.id.btn_closeAds);
+        btn_closeAds.setOnClickListener(this);
+        btn_adsinfo = findViewById(R.id.btn_adsinfo);
+        btn_adsinfo.setOnClickListener(this);
+       
         cav = (CaseeAdView) this.findViewById(R.id.caseeAdView);
         cav.setListener(this);
         
@@ -250,6 +261,28 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		if (cav != null) {
 			cav.onShown();
 		}
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean ads = settings.getBoolean("ads", false);
+        if (ads) {
+        	int year = settings.getInt("year", 2000);
+        	int month = settings.getInt("month", 1);
+        	int day = settings.getInt("day", 1);
+            final Calendar c = Calendar.getInstance();
+            int curYear = c.get(Calendar.YEAR); //获取当前年份
+            int curMonth = c.get(Calendar.MONTH);//获取当前月份
+            int curDay = c.get(Calendar.DAY_OF_MONTH);//获取当前月份的日期号码
+            if (year == curYear && month == curMonth && day == curDay){
+            	ads = true;
+            } else {
+            	ads = false;
+            }
+        }
+        if (!ads) {
+        	cav.setVisibility(View.VISIBLE);
+        } else {
+        	cav.setVisibility(View.INVISIBLE);
+        }
+
 		super.onResume();
 	}    
    
@@ -278,10 +311,18 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		log("onFailedToReceiveRefreshAd");
 	}
 
+	private Handler mAdsInfoHandler = new Handler();
+	private Runnable mDisplayAdsInfo = new Runnable() {
+		   public void run() {
+				btn_closeAds.setVisibility(View.VISIBLE);
+				btn_adsinfo.setVisibility(View.VISIBLE);
+		   }
+	};
 	private Handler mUpdateAdsHandler = new Handler();
 	private Runnable mUpdateAdsArea = new Runnable() {
 		   public void run() {
-				txtv_ads_area.setVisibility(View.INVISIBLE);			   	
+				txtv_ads_area.setVisibility(View.INVISIBLE);
+				mAdsInfoHandler.postDelayed(mDisplayAdsInfo, 25000);
 		   }
 	};
 	public void onReceiveAd(CaseeAdView cav) {
@@ -361,6 +402,24 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 				}
 			}
 			break;
+		case R.id.btn_closeAds:
+		case R.id.btn_adsinfo:
+			View vv  = cav.getChildAt(0);
+			vv.performClick();
+	        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+	        SharedPreferences.Editor editor = settings.edit();
+	        editor.putBoolean("ads", true);
+            final Calendar c = Calendar.getInstance();
+            editor.putInt("year", c.get(Calendar.YEAR));
+            editor.putInt("month", c.get(Calendar.MONTH));
+            editor.putInt("day",c.get(Calendar.DAY_OF_MONTH));
+	        editor.commit();
+			cav.setVisibility(View.INVISIBLE);
+			btn_closeAds.setVisibility(View.INVISIBLE);
+			btn_adsinfo.setVisibility(View.INVISIBLE);
+			txtv_ads_area.setVisibility(View.VISIBLE);
+	        cav.invalidate();
+	        break;
 		}
 	}	
 
@@ -618,7 +677,7 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.jiaojuan);
 		builder.setView(view);
-		if (have_answer > 0) {
+		if ((have_answer - right_answer) > 0) {
 		builder.setPositiveButton(R.string.view_wrong, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dlg, int sumthin) {
 					enterViewWrongMode();

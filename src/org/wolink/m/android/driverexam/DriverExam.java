@@ -1,8 +1,12 @@
 package org.wolink.m.android.driverexam;
 
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -60,6 +64,27 @@ public class DriverExam extends Activity implements OnClickListener, CaseeAdView
 		if (cav != null) {
 			cav.onShown();
 		}
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean ads = settings.getBoolean("ads", false);
+        if (ads) {
+        	int year = settings.getInt("year", 2000);
+        	int month = settings.getInt("month", 1);
+        	int day = settings.getInt("day", 1);
+            final Calendar c = Calendar.getInstance();
+            int curYear = c.get(Calendar.YEAR); //获取当前年份
+            int curMonth = c.get(Calendar.MONTH);//获取当前月份
+            int curDay = c.get(Calendar.DAY_OF_MONTH);//获取当前月份的日期号码
+            if (year == curYear && month == curMonth && day == curDay){
+            	ads = true;
+            } else {
+            	ads = false;
+            }
+        }
+        if (!ads) {
+        	cav.setVisibility(View.VISIBLE);
+        } else {
+        	cav.setVisibility(View.INVISIBLE);
+        }
 		super.onResume();
 	}    
 	
