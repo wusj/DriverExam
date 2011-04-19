@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res/org.wolink.m.android.driverexam"
+	xmlns:umadsdk="http://schemas.android.com/apk/res/org.wolink.m.android.driverexam"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -63,6 +64,7 @@
 	android:textSize="20sp"
     />
 </LinearLayout>
+	<!-- 
   <com.casee.adsdk.CaseeAdView  
     android:id="@+id/caseeAdView"
     android:layout_width="fill_parent" 	
@@ -73,5 +75,15 @@
     app:textColor="#FFFFFF"
     app:refreshInterval="30000"
     app:vertical="false"
-    /> 
+    />
+     -->
+    	  <net.youmi.android.AdView
+		   android:id="@+id/adView"  
+		   android:layout_width="fill_parent"  
+		   android:layout_height="wrap_content"
+		   android:layout_alignParentBottom="true"
+		   umadsdk:textColor="#ffffff" 
+		   umadsdk:backgroundTransparent="255"
+		   umadsdk:backgroundColor="#000" 
+		   />  
 </RelativeLayout>

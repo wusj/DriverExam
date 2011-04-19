@@ -39,10 +39,10 @@
     <string name="c">C</string>
     <string name="d">D</string>
     
-    <string name="finish_right_prompt">恭喜您！本次练习共%d题，您已全部答对。</string>
-    <string name="finish_wrong_prompt">本次练习共%d题，您答对%d题，答错%d题。\n错题已存入强化练习！</string>
-    <string name="unfinish_wrong_prompt">本次练习共%d题，您已答%d题，答对%d题，答错%d题。\n错题已存入强化练习！</string>
-    <string name="unfinish_right_prompt">本次练习共%d题，您已答%d题，全部正确。</string>
+    <string name="finish_right_prompt" formatted="false">恭喜您！本次练习共%d题，您已全部答对。</string>
+    <string name="finish_wrong_prompt" formatted="false">本次练习共%d题，您答对%d题，答错%d题。\n错题已存入强化练习！</string>
+    <string name="unfinish_wrong_prompt" formatted="false">本次练习共%d题，您已答%d题，答对%d题，答错%d题。\n错题已存入强化练习！</string>
+    <string name="unfinish_right_prompt" formatted="false">本次练习共%d题，您已答%d题，全部正确。</string>
     <string name="view_wrong">错题回顾</string>
     <string name="no_wrong">没有错题，无法进行强化练习</string>
     
@@ -51,7 +51,7 @@
     
     <string name="your_score">您的得分是：</string>
     
-    <string name="app_title">%s v%s</string>
+    <string name="app_title" formatted="false">%s v%s</string>
     <string name="about_text">Android平台适用\n\n©沃林克软件工作室\n版权所有\n\n官网：<a href="http://sw.wolink.org/">http://sw.wolink.org</a>\n</string>
     <string name="about_note">* 本软件使用完全免费，使用过程中产生的网络流量费用由网络运营商收取。</string>
     

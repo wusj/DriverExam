@@ -2,6 +2,7 @@
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res/org.wolink.m.android.driverexam"
+  xmlns:umadsdk="http://schemas.android.com/apk/res/org.wolink.m.android.driverexam"
   android:layout_width = "match_parent"
   android:layout_height = "match_parent"
   >
@@ -222,6 +223,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
 	>
+	<!--  
     <com.casee.adsdk.CaseeAdView  
     android:id="@+id/caseeAdView"
     android:layout_width="fill_parent" 	
@@ -233,6 +235,7 @@
     app:refreshInterval="20000"
     app:vertical="false"
     /> 
+    -->
 	<TextView
 	android:id="@+id/txtv_ads_area"
 	android:layout_width="fill_parent"
@@ -242,6 +245,15 @@
 	android:textSize="20dp"
 	android:gravity="center"
 	/>
+	           <net.youmi.android.AdView
+		   android:id="@+id/adView"  
+		   android:layout_width="fill_parent"  
+		   android:layout_height="wrap_content"
+		   umadsdk:textColor="#ffffff" 
+		   umadsdk:backgroundTransparent="255"
+		   umadsdk:backgroundColor="#000" 
+		   /> 
+
 	<View
 	android:id="@+id/btn_closeAds"
 	android:layout_width="fill_parent"

@@ -2,6 +2,8 @@ package org.wolink.m.android.driverexam;
 
 import java.util.Calendar;
 
+import net.youmi.android.AdManager;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,19 +16,28 @@ import android.widget.TextView;
 import com.casee.adsdk.CaseeAdView;
 
 public class DriverExam extends Activity implements OnClickListener, CaseeAdView.AdListener{
-	CaseeAdView cav;
+	net.youmi.android.AdView adView;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);     
+        try{
+        	String version = this.getPackageManager().
+				getPackageInfo("org.wolink.m.android.driverexam", 0).versionName;
+        	AdManager.init("09376322e1b9b3b5", "5de21b027dad7cbf", 30, false, version);  
+        }
+        catch (Throwable t) {
+        	
+        }
+        
         setContentView(R.layout.main);
         findViewById(R.id.btn_chapter).setOnClickListener(this);
         //findViewById(R.id.btn_random).setOnClickListener(this);
         findViewById(R.id.btn_intensify).setOnClickListener(this);
         findViewById(R.id.btn_exam).setOnClickListener(this);
         findViewById(R.id.btn_help).setOnClickListener(this);
-        cav = (CaseeAdView) this.findViewById(R.id.caseeAdView);
+        adView = (net.youmi.android.AdView) this.findViewById(R.id.adView);
         
         TextView txtv_main_title = (TextView)findViewById(R.id.txtv_main_title);
         try {
@@ -40,30 +51,18 @@ public class DriverExam extends Activity implements OnClickListener, CaseeAdView
    }
     
 	public void onPause() {
-		if (cav != null) {
-			cav.onUnshown();
-		}
 		super.onPause();
 	}
 
 	public void onStop() {
-		if (cav != null) {
-			cav.onUnshown();
-		}
 		super.onStop();
 	}
 
 	public void onStart() {
-		if (cav != null) {
-			cav.onShown();
-		}
 		super.onStart();
 	}
 
 	public void onResume() {
-		if (cav != null) {
-			cav.onShown();
-		}
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean ads = settings.getBoolean("ads", false);
         if (ads) {
@@ -80,10 +79,10 @@ public class DriverExam extends Activity implements OnClickListener, CaseeAdView
             	ads = false;
             }
         }
-        if (!ads) {
-        	cav.setVisibility(View.VISIBLE);
-        } else {
-        	cav.setVisibility(View.INVISIBLE);
+        if (ads) {
+        	//title_bar.removeViewAt(1);
+        	adView.setVisibility(View.INVISIBLE);
+        	//have_ad = true;
         }
 		super.onResume();
 	}    

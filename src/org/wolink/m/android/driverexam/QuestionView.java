@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Random;
 
+import net.youmi.android.AdListener;
+import net.youmi.android.AdManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -34,9 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
-import com.casee.adsdk.CaseeAdView;
-
-public class QuestionView extends Activity implements OnClickListener, OnCheckedChangeListener, CaseeAdView.AdListener{
+public class QuestionView extends Activity implements OnClickListener, OnCheckedChangeListener, AdListener{
 	private static final String TAG = "DriverExam";
 	
 	private static final String STRONG_FILE = "wrong_question";
@@ -89,7 +89,8 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	TextView txtv_ads_area;
 	RadioGroup rg_choice;
 	RadioGroup rg_trueorfalse;
-	CaseeAdView cav;
+	
+	net.youmi.android.AdView adView;
 	
 	Button btn_next_question;
 	Button btn_prev_question;
@@ -98,6 +99,8 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	View btn_adsinfo;
 	
 	ImageView imgv_picture;
+	
+	private boolean have_ad;
 	
 	/* time process */
 	private Handler mHandler = new Handler();
@@ -138,6 +141,15 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);     
         
+        try{
+        	String version = this.getPackageManager().
+				getPackageInfo("org.wolink.m.android.driverexam", 0).versionName;
+        	AdManager.init("09376322e1b9b3b5", "5de21b027dad7cbf", 30, false, version);  
+        }
+        catch (Throwable t) {
+        	
+        }
+        
         setContentView(R.layout.questionview);
          
         tv_question_title = (TextView)findViewById(R.id.question);
@@ -160,8 +172,8 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
         btn_adsinfo = findViewById(R.id.btn_adsinfo);
         btn_adsinfo.setOnClickListener(this);
        
-        cav = (CaseeAdView) this.findViewById(R.id.caseeAdView);
-        cav.setListener(this);
+        adView = (net.youmi.android.AdView ) this.findViewById(R.id.adView);
+        adView.setAdListener(this);
         
         btn_next_question.setOnClickListener(this);
         btn_prev_question.setOnClickListener(this);
@@ -237,30 +249,18 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
     }
 
 	public void onPause() {
-		if (cav != null) {
-			cav.onUnshown();
-		}
 		super.onPause();
 	}
 
 	public void onStop() {
-		if (cav != null) {
-			cav.onUnshown();
-		}
 		super.onStop();
 	}
 
 	public void onStart() {
-		if (cav != null) {
-			cav.onShown();
-		}
 		super.onStart();
 	}
 
 	public void onResume() {
-		if (cav != null) {
-			cav.onShown();
-		}
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean ads = settings.getBoolean("ads", false);
         if (ads) {
@@ -277,10 +277,11 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
             	ads = false;
             }
         }
-        if (!ads) {
-        	cav.setVisibility(View.VISIBLE);
-        } else {
-        	cav.setVisibility(View.INVISIBLE);
+        
+        if (ads) {
+        	//title_bar.removeViewAt(1);
+        	adView.setVisibility(View.INVISIBLE);
+        	have_ad = true;
         }
 
 		super.onResume();
@@ -301,41 +302,30 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		outState.putInt(SAVE_KEY_VIEW_MODE, mode);
 	}
 	
-	public void onFailedToReceiveAd(CaseeAdView cav) {
-		// TODO Auto-generated method stub
-		log("onFailedToReceiveAd");
-	}
-
-	public void onFailedToReceiveRefreshAd(CaseeAdView cav) {
-		// TODO Auto-generated method stub
-		log("onFailedToReceiveRefreshAd");
-	}
-
-	private Handler mAdsInfoHandler = new Handler();
-	private Runnable mDisplayAdsInfo = new Runnable() {
-		   public void run() {
-				btn_closeAds.setVisibility(View.VISIBLE);
-				btn_adsinfo.setVisibility(View.VISIBLE);
-		   }
-	};
 	private Handler mUpdateAdsHandler = new Handler();
 	private Runnable mUpdateAdsArea = new Runnable() {
 		   public void run() {
-				txtv_ads_area.setVisibility(View.INVISIBLE);
-				mAdsInfoHandler.postDelayed(mDisplayAdsInfo, 25000);
+			   txtv_ads_area.setVisibility(View.INVISIBLE);
+			   txtv_ads_area.invalidate();
+			   adView.invalidate();
+			   btn_closeAds.setVisibility(View.VISIBLE);
+			   btn_adsinfo.setVisibility(View.VISIBLE);
 		   }
 	};
-	public void onReceiveAd(CaseeAdView cav) {
-		// TODO Auto-generated method stub	
-		log("onReceiveAd");
-		mHaveAd = true;
-		mUpdateAdsHandler.post(mUpdateAdsArea);
-	}
 
-	public void onReceiveRefreshAd(CaseeAdView cav) {
-		// TODO Auto-generated method stub
-		log("onReceiveRefreshAd");	
-	}
+    public void onReceiveAd()
+    {
+    	if (!have_ad)
+    	{
+    		have_ad = true;
+    		mUpdateAdsHandler.post(mUpdateAdsArea);
+    	}
+    }
+    
+    // Method descriptor #3 ()V
+    public void onConnectFailed()
+    {
+    }
 	
 	public boolean onPrepareOptionsMenu (Menu menu) {
 		menu.clear();
@@ -404,7 +394,7 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 			break;
 		case R.id.btn_closeAds:
 		case R.id.btn_adsinfo:
-			View vv  = cav.getChildAt(0);
+			View vv  = adView.getChildAt(0);
 			vv.performClick();
 	        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 	        SharedPreferences.Editor editor = settings.edit();
@@ -414,11 +404,11 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
             editor.putInt("month", c.get(Calendar.MONTH));
             editor.putInt("day",c.get(Calendar.DAY_OF_MONTH));
 	        editor.commit();
-			cav.setVisibility(View.INVISIBLE);
+	        adView.setVisibility(View.INVISIBLE);
 			btn_closeAds.setVisibility(View.INVISIBLE);
 			btn_adsinfo.setVisibility(View.INVISIBLE);
 			txtv_ads_area.setVisibility(View.VISIBLE);
-	        cav.invalidate();
+			//adView.invalidate();
 	        break;
 		}
 	}	
