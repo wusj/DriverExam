@@ -199,18 +199,6 @@
 			android:layout_height="match_parent"
 			android:layout_weight="1"				
 	  	>
-		<TextView 
-		    android:id="@+id/btn_adsinfo"
-			android:layout_width="match_parent"
-			android:layout_height="16px"	
-			android:gravity="center"
-			android:textSize="12px"
-			android:text="@string/ads_info"	
-			android:layout_weight="0"	
-			android:layout_alignParentBottom="true"
-			android:background="#10FFFFFF"
-			android:visibility="invisible"	
-		/>
 	  	</RelativeLayout>
 	  	<Button
 	  	  android:id = "@+id/btn_next_question"
@@ -253,13 +241,6 @@
 		   umadsdk:backgroundTransparent="255"
 		   umadsdk:backgroundColor="#000" 
 		   /> 
-
-	<View
-	android:id="@+id/btn_closeAds"
-	android:layout_width="fill_parent"
-	android:layout_height="48dip"
-	android:visibility="invisible"	
-	/>
 	</FrameLayout>
   </LinearLayout>  
 </RelativeLayout>

@@ -3,17 +3,16 @@ package org.wolink.m.android.driverexam;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.Random;
 
-import net.youmi.android.AdListener;
 import net.youmi.android.AdManager;
+import net.youmi.android.AdView;
+import net.youmi.android.AdViewListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +20,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
-public class QuestionView extends Activity implements OnClickListener, OnCheckedChangeListener, AdListener{
+public class QuestionView extends Activity implements OnClickListener, OnCheckedChangeListener, AdViewListener{
 	private static final String TAG = "DriverExam";
 	
 	private static final String STRONG_FILE = "wrong_question";
@@ -78,7 +76,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	int current_question;
 	int current_wrong;
 	int mode;
-	boolean mHaveAd = false;
 	TextView tv_question_title;
 	TextView tv_total_question;
 	TextView tv_current_question;
@@ -95,12 +92,7 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	Button btn_next_question;
 	Button btn_prev_question;
 	
-	View btn_closeAds;
-	View btn_adsinfo;
-	
 	ImageView imgv_picture;
-	
-	private boolean have_ad;
 	
 	/* time process */
 	private Handler mHandler = new Handler();
@@ -135,20 +127,18 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		       }
 		   }
 	};
-		
+	
+	static{
+		//第一个参数为您的应用发布Id
+		//第二个参数为您的应用密码
+		//第三个参数是请求广告的间隔，有效的设置值为30至200，单位为秒
+		//第四个参数是设置测试模式，设置为true时，可以获取测试广告，正式发布请设置此参数为false
+		AdManager.init("09376322e1b9b3b5", "5de21b027dad7cbf", 30, false);
+	}
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);     
-        
-        try{
-        	String version = this.getPackageManager().
-				getPackageInfo("org.wolink.m.android.driverexam", 0).versionName;
-        	AdManager.init("09376322e1b9b3b5", "5de21b027dad7cbf", 30, false, version);  
-        }
-        catch (Throwable t) {
-        	
-        }
         
         setContentView(R.layout.questionview);
          
@@ -166,14 +156,9 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
         btn_next_question = (Button)findViewById(R.id.btn_next_question);
         btn_prev_question = (Button)findViewById(R.id.btn_prev_question);
         imgv_picture = (ImageView)findViewById(R.id.imgv_picture);
-        
-        btn_closeAds = findViewById(R.id.btn_closeAds);
-        btn_closeAds.setOnClickListener(this);
-        btn_adsinfo = findViewById(R.id.btn_adsinfo);
-        btn_adsinfo.setOnClickListener(this);
        
         adView = (net.youmi.android.AdView ) this.findViewById(R.id.adView);
-        adView.setAdListener(this);
+        adView.setAdViewListener(this);
         
         btn_next_question.setOnClickListener(this);
         btn_prev_question.setOnClickListener(this);
@@ -261,29 +246,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 	}
 
 	public void onResume() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean ads = settings.getBoolean("ads", false);
-        if (ads) {
-        	int year = settings.getInt("year", 2000);
-        	int month = settings.getInt("month", 1);
-        	int day = settings.getInt("day", 1);
-            final Calendar c = Calendar.getInstance();
-            int curYear = c.get(Calendar.YEAR); //获取当前年份
-            int curMonth = c.get(Calendar.MONTH);//获取当前月份
-            int curDay = c.get(Calendar.DAY_OF_MONTH);//获取当前月份的日期号码
-            if (year == curYear && month == curMonth && day == curDay){
-            	ads = true;
-            } else {
-            	ads = false;
-            }
-        }
-        
-        if (ads) {
-        	//title_bar.removeViewAt(1);
-        	adView.setVisibility(View.INVISIBLE);
-        	have_ad = true;
-        }
-
 		super.onResume();
 	}    
    
@@ -301,31 +263,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 		outState.putLong(SAVE_KEY_START_TIME, mStartTime);
 		outState.putInt(SAVE_KEY_VIEW_MODE, mode);
 	}
-	
-	private Handler mUpdateAdsHandler = new Handler();
-	private Runnable mUpdateAdsArea = new Runnable() {
-		   public void run() {
-			   txtv_ads_area.setVisibility(View.INVISIBLE);
-			   txtv_ads_area.invalidate();
-			   adView.invalidate();
-			   btn_closeAds.setVisibility(View.VISIBLE);
-			   btn_adsinfo.setVisibility(View.VISIBLE);
-		   }
-	};
-
-    public void onReceiveAd()
-    {
-    	if (!have_ad)
-    	{
-    		have_ad = true;
-    		mUpdateAdsHandler.post(mUpdateAdsArea);
-    	}
-    }
-    
-    // Method descriptor #3 ()V
-    public void onConnectFailed()
-    {
-    }
 	
 	public boolean onPrepareOptionsMenu (Menu menu) {
 		menu.clear();
@@ -392,24 +329,6 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 				}
 			}
 			break;
-		case R.id.btn_closeAds:
-		case R.id.btn_adsinfo:
-			View vv  = adView.getChildAt(0);
-			vv.performClick();
-	        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-	        SharedPreferences.Editor editor = settings.edit();
-	        editor.putBoolean("ads", true);
-            final Calendar c = Calendar.getInstance();
-            editor.putInt("year", c.get(Calendar.YEAR));
-            editor.putInt("month", c.get(Calendar.MONTH));
-            editor.putInt("day",c.get(Calendar.DAY_OF_MONTH));
-	        editor.commit();
-	        adView.setVisibility(View.INVISIBLE);
-			btn_closeAds.setVisibility(View.INVISIBLE);
-			btn_adsinfo.setVisibility(View.INVISIBLE);
-			txtv_ads_area.setVisibility(View.VISIBLE);
-			//adView.invalidate();
-	        break;
 		}
 	}	
 
@@ -976,5 +895,16 @@ public class QuestionView extends Activity implements OnClickListener, OnChecked
 			this.src = src;
 			this.flag = flag;
 		}
+	}
+	@Override
+	public void onAdViewSwitchedAd(AdView arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnectFailed(AdView arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
